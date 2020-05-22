@@ -1,0 +1,10 @@
+server:
+  port: 9307  # HTTP (Tomcat) port
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
