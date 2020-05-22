@@ -1,9 +1,11 @@
 package com.github.cocktail.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +25,7 @@ import java.util.UUID;
  */
 @RestController
 @Slf4j
-@Configuration
+@Api(tags = {"API-Jedis简单锁测试"}, protocols = "http")
 public class LockJedisTestController {
 
     /**
@@ -38,16 +40,19 @@ public class LockJedisTestController {
      * 设置成功
      */
     private static final String SET_SUCCESS = "OK";
+
     @Autowired
     private RedissonClient redissonClient;
+
     @Autowired
     private JedisPool jedisPool;
 
+    @ApiOperation(value = "加锁", notes = "加锁")
     @GetMapping(
             value = "/test/jedis/lock",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
-    public String testJedisLock(@RequestParam(value = "key") String key) {
+    public String testJedisLock(@ApiParam("锁key") @RequestParam(value = "key") String key) {
         Jedis jedis = this.jedisPool.getResource();
         //默认redis DB
         jedis.select(1);
@@ -73,12 +78,13 @@ public class LockJedisTestController {
         return value;
     }
 
+    @ApiOperation(value = "解锁", notes = "解锁")
     @GetMapping(
             value = "/test/jedis/unlock",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
-    public Boolean testJedisUnlock(@RequestParam(value = "key") String key,
-                                   @RequestParam(value = "value") String value) {
+    public Boolean testJedisUnlock(@ApiParam("锁key") @RequestParam(value = "key") String key,
+                                   @ApiParam("锁value") @RequestParam(value = "value") String value) {
         String releaseSuccess = "1";
         Jedis jedis = jedisPool.getResource();
         jedis.select(1);
